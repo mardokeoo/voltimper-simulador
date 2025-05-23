@@ -399,12 +399,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 break;
             
-            case 'battery':
+             case 'battery':
                 propertiesHTML = `
                     <div class="property-group">
                         <div class="property-item">
                             <label class="property-label">Voltaje:</label>
-                            <input type="number" class="property-input" data-property="voltage" value="${properties.voltage}" min="1" max="24" step="0.1">
+                            // MODIFICACIÓN: min="0" y max="10"
+                            <input type="number" class="property-input" data-property="voltage" value="${properties.voltage}" min="0" max="10" step="0.1">
                             <span class="property-unit">V</span>
                         </div>
                     </div>
