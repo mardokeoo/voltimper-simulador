@@ -36,8 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inicialización
     initEventListeners();
-    loadSampleCircuits(); // Carga circuitos de ejemplo si es necesario
-    // updateCircuitsList(); // Actualiza la lista de circuitos si tienes una
+    loadSampleCircuits();
+    updateCircuitsList();
 
     // Funciones principales
     function initEventListeners() {
@@ -72,8 +72,56 @@ document.addEventListener('DOMContentLoaded', function() {
         simulateBtn.addEventListener('click', startSimulation);
         resetSimulationBtn.addEventListener('click', resetSimulation);
 
-        // Circuitos
-        newCircuitBtn.addEventListener('click', () => showModal('newCircuitModal'));
+        // Circuitos - Mejorado el diseño de las pestañas
+        newCircuitBtn.addEventListener('click', () => {
+            showModal('newCircuitModal');
+            // Mejora visual para el modal
+            const modalContent = newCircuitModal.querySelector('.modal-content');
+            modalContent.style.borderRadius = '10px';
+            modalContent.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+            modalContent.style.overflow = 'hidden';
+            
+            // Mejor diseño para el formulario
+            newCircuitForm.style.padding = '20px';
+            newCircuitForm.style.backgroundColor = '#f9f9f9';
+            
+            // Mejor diseño para los inputs
+            circuitNameInput.style.padding = '10px';
+            circuitNameInput.style.borderRadius = '5px';
+            circuitNameInput.style.border = '1px solid #ddd';
+            circuitNameInput.style.width = '100%';
+            circuitNameInput.style.marginBottom = '15px';
+            
+            // Mejor diseño para los botones
+            const formButtons = newCircuitForm.querySelectorAll('button');
+            formButtons.forEach(btn => {
+                btn.style.padding = '10px 15px';
+                btn.style.borderRadius = '5px';
+                btn.style.border = 'none';
+                btn.style.cursor = 'pointer';
+                btn.style.marginRight = '10px';
+                btn.style.transition = 'all 0.3s';
+                
+                if (btn.type === 'submit') {
+                    btn.style.backgroundColor = '#4CAF50';
+                    btn.style.color = 'white';
+                } else {
+                    btn.style.backgroundColor = '#f44336';
+                    btn.style.color = 'white';
+                }
+                
+                btn.addEventListener('mouseover', () => {
+                    btn.style.opacity = '0.8';
+                    btn.style.transform = 'translateY(-2px)';
+                });
+                
+                btn.addEventListener('mouseout', () => {
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateY(0)';
+                });
+            });
+        });
+        
         newCircuitForm.addEventListener('submit', createNewCircuit);
 
         // Modales
@@ -337,7 +385,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         switch(type) {
             case 'resistor':
-                // MODIFICACIÓN: Mostrar como texto, no como input
                 propertiesHTML = `
                     <div class="property-group">
                         <div class="property-item">
@@ -380,6 +427,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label class="property-label">Voltaje directo:</label>
                             <input type="number" class="property-input" data-property="forwardVoltage" value="${properties.forwardVoltage}" min="1" max="5" step="0.1">
                             <span class="property-unit">V</span>
+                        </div>
+                        <div class="property-item">
+                            <label class="property-label">Color:</label>
+                            <select class="property-input" data-property="color">
+                                <option value="red" ${properties.color === 'red' ? 'selected' : ''}>Rojo</option>
+                                <option value="green" ${properties.color === 'green' ? 'selected' : ''}>Verde</option>
+                                <option value="blue" ${properties.color === 'blue' ? 'selected' : ''}>Azul</option>
+                                <option value="yellow" ${properties.color === 'yellow' ? 'selected' : ''}>Amarillo</option>
+                            </select>
                         </div>
                     </div>
                 `;
@@ -435,7 +491,6 @@ document.addEventListener('DOMContentLoaded', function() {
         componentPropertiesContent.innerHTML = propertiesHTML;
         
         // Actualizar propiedades cuando cambian los inputs
-        // Se asegura de que solo los elementos .property-input tengan este listener
         document.querySelectorAll('.property-input').forEach(input => {
             input.addEventListener('change', function() {
                 updateComponentProperties(selectedComponent, this);
@@ -444,20 +499,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateComponentProperties(component, input) {
-        // const propertyName = input.previousElementSibling.textContent.replace(':', '').trim().toLowerCase(); // Esto podría ser frágil
-        const propertyName = input.dataset.property; // Usar data-property es más robusto
+        const propertyName = input.dataset.property;
         let propertyValue = input.value;
 
-        if (!component || !propertyName) return; // Salir si no hay componente o nombre de propiedad
+        if (!component || !propertyName) return;
 
         switch(component.type) {
-            // El caso 'resistor' ya no necesita estar aquí si su valor es fijo desde el panel.
-            // Si el valor de resistencia se pudiera cambiar programáticamente de otra forma,
-            // aún se necesitaría la lógica para actualizar .component-value
             case 'resistor': 
-                // Como el input fue removido, esta parte no se llamará desde un 'change' event del panel.
-                // Si necesitas actualizar el valor visual por otros medios:
-                // component.element.querySelector('.component-value').textContent = `${component.properties.resistance}Ω`;
                 break;
             
             case 'capacitor':
@@ -480,6 +528,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (propertyName === 'forwardVoltage') {
                     component.properties.forwardVoltage = parseFloat(propertyValue);
                     component.element.querySelector('.component-value').textContent = `${propertyValue}V`;
+                } else if (propertyName === 'color') {
+                    component.properties.color = propertyValue;
+                    const ledVisual = component.element.querySelector('.led-visual');
+                    if (ledVisual) {
+                        ledVisual.style.backgroundColor = propertyValue;
+                    }
                 }
                 break;
             
@@ -546,13 +600,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const terminal = e.target;
         const componentEl = terminal.closest('.component');
-        const componentData = components.find(c => c.id === componentEl.id); // Cambié nombre a componentData para evitar conflicto
+        const componentData = components.find(c => c.id === componentEl.id);
         
         selectedTerminal = {
-            componentId: componentData.id, // Guardamos ID del componente
-            terminalElement: terminal,     // Guardamos el elemento del terminal
-            terminalPosition: terminal.dataset.position, // Guardamos la posición (left, right, etc.)
-            terminalType: terminal.dataset.type,         // Guardamos el tipo (anode, cathode, terminal)
+            componentId: componentData.id,
+            terminalElement: terminal,
+            terminalPosition: terminal.dataset.position,
+            terminalType: terminal.dataset.type,
             x: terminal.offsetLeft + terminal.offsetWidth / 2 + componentEl.offsetLeft,
             y: terminal.offsetTop + terminal.offsetHeight / 2 + componentEl.offsetTop
         };
@@ -604,8 +658,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const toComponentEl = toTerminalElement.closest('.component');
             const toComponentData = components.find(c => c.id === toComponentEl.id);
             
-            // No permitir conexión consigo mismo (mismo componente, diferente terminal está bien si se implementara)
-            // Aquí la validación es simple: no conectar un componente a sí mismo.
             if (toComponentData.id !== selectedTerminal.componentId) {
                 createConnection(selectedTerminal, { 
                     componentId: toComponentData.id, 
@@ -637,9 +689,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Calcular puntos de control para una curva suave
         const midX = (from.x + to.x) / 2;
-        // const midY = (from.y + to.y) / 2; // No usado en la d actual
-        
-        // Crear una curva Bézier
         const d = `M ${from.x} ${from.y} C ${midX} ${from.y}, ${midX} ${to.y}, ${to.x} ${to.y}`;
         wire.setAttribute('d', d);
         
@@ -649,9 +698,9 @@ document.addEventListener('DOMContentLoaded', function() {
         connections.push({
             id,
             fromComponent: from.componentId,
-            fromTerminal: from.terminalPosition, // Usar la posición del terminal
+            fromTerminal: from.terminalPosition,
             toComponent: to.componentId,
-            toTerminal: to.terminalPosition,   // Usar la posición del terminal
+            toTerminal: to.terminalPosition,
             element: wire
         });
         
@@ -700,7 +749,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const ledVisual = comp.element.querySelector('.led-visual');
                 if (ledVisual) {
                     ledVisual.classList.remove('on');
-                    ledVisual.style.opacity = 1; // O el valor por defecto
+                    ledVisual.style.opacity = 0.3;
                 }
             }
         });
@@ -741,48 +790,100 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // MODIFICACIÓN: Simular LEDs solo si están conectados
+        // Simulación mejorada para LED
         components.filter(c => c.type === 'led').forEach(ledComponent => {
             const ledVisual = ledComponent.element.querySelector('.led-visual');
             if (ledVisual) {
-                // Necesitamos saber las posiciones de los terminales del LED (e.g., 'left' para ánodo, 'right' para cátodo)
-                // Esta información debe estar en ledComponent.terminals
+                // Obtener información de los terminales del LED
                 const anodeTerminalInfo = ledComponent.terminals.find(t => t.type === 'anode');
                 const cathodeTerminalInfo = ledComponent.terminals.find(t => t.type === 'cathode');
 
                 if (!anodeTerminalInfo || !cathodeTerminalInfo) {
-                    // Si no se definieron correctamente los terminales del LED
                     ledVisual.classList.remove('on');
-                    ledVisual.style.opacity = 1; // Apagado
-                    return; 
+                    ledVisual.style.opacity = 0.3;
+                    return;
                 }
 
+                // Verificar si ambos terminales están conectados
                 const isAnodeConnected = connections.some(conn =>
                     (conn.fromComponent === ledComponent.id && conn.fromTerminal === anodeTerminalInfo.position) ||
                     (conn.toComponent === ledComponent.id && conn.toTerminal === anodeTerminalInfo.position)
                 );
+                
                 const isCathodeConnected = connections.some(conn =>
                     (conn.fromComponent === ledComponent.id && conn.fromTerminal === cathodeTerminalInfo.position) ||
                     (conn.toComponent === ledComponent.id && conn.toTerminal === cathodeTerminalInfo.position)
                 );
 
-                if (isAnodeConnected && isCathodeConnected) { 
-                    // Lógica de encendido (aún simplificada, sin cálculo de corriente/voltaje real)
+                // Verificar si hay una batería conectada y el estado del switch
+                let hasPower = false;
+                let switchClosed = false;
+                
+                if (isAnodeConnected && isCathodeConnected) {
+                    // Buscar si hay una batería conectada correctamente
+                    const battery = components.find(c => c.type === 'battery');
+                    if (battery) {
+                        const batteryPositiveTerminal = battery.terminals.find(t => t.type === 'positive');
+                        const batteryNegativeTerminal = battery.terminals.find(t => t.type === 'negative');
+                        
+                        // Verificar conexión correcta de la batería al LED
+                        const batteryConnectedCorrectly = connections.some(conn => {
+                            // Batería positiva conectada al ánodo del LED
+                            const positiveToAnode = 
+                                (conn.fromComponent === battery.id && conn.fromTerminal === batteryPositiveTerminal.position &&
+                                 conn.toComponent === ledComponent.id && conn.toTerminal === anodeTerminalInfo.position) ||
+                                (conn.toComponent === battery.id && conn.toTerminal === batteryPositiveTerminal.position &&
+                                 conn.fromComponent === ledComponent.id && conn.fromTerminal === anodeTerminalInfo.position);
+                            
+                            // Batería negativa conectada al cátodo del LED
+                            const negativeToCathode = 
+                                (conn.fromComponent === battery.id && conn.fromTerminal === batteryNegativeTerminal.position &&
+                                 conn.toComponent === ledComponent.id && conn.toTerminal === cathodeTerminalInfo.position) ||
+                                (conn.toComponent === battery.id && conn.toTerminal === batteryNegativeTerminal.position &&
+                                 conn.fromComponent === ledComponent.id && conn.fromTerminal === cathodeTerminalInfo.position);
+                            
+                            return positiveToAnode && negativeToCathode;
+                        });
+                        
+                        // Verificar estado de los switches en el circuito
+                        const switches = components.filter(c => c.type === 'switch');
+                        if (switches.length > 0) {
+                            // Asumimos que el LED solo se enciende si TODOS los switches están abiertos
+                            switchClosed = switches.some(sw => sw.properties.isClosed);
+                        }
+                        
+                        hasPower = batteryConnectedCorrectly && !switchClosed;
+                    }
+                }
+
+                // Actualizar estado visual del LED
+                if (hasPower) {
                     ledVisual.classList.add('on');
-                    const randomBrightness = 0.3 + Math.random() * 0.7; 
+                    const randomBrightness = 0.7 + Math.random() * 0.3;
                     ledVisual.style.opacity = randomBrightness;
+                    ledVisual.style.backgroundColor = ledComponent.properties.color || 'red';
                 } else {
                     ledVisual.classList.remove('on');
-                    ledVisual.style.opacity = 1; // O un valor por defecto para apagado
+                    ledVisual.style.opacity = 0.3;
                 }
             }
         });
         
-        // Simular conexiones activas (esto es solo visual, no afecta la lógica del circuito)
+        // Simular switches
+        components.filter(c => c.type === 'switch').forEach(switchComponent => {
+            const switchVisual = switchComponent.element.querySelector('.switch-visual');
+            if (switchVisual) {
+                if (switchComponent.properties.isClosed) {
+                    switchVisual.classList.add('on');
+                } else {
+                    switchVisual.classList.remove('on');
+                }
+            }
+        });
+        
+        // Simular conexiones activas
         connections.forEach(conn => {
-            // Ejemplo de animación simple para el cable
-            if (isSimulating) { // Solo animar si la simulación está activa
-                 // Esta animación de parpadeo puede ser muy básica o mejorada
+            if (isSimulating) {
                 conn.element.classList.toggle('active', Math.floor(time * 2) % 2 === 0);
             } else {
                 conn.element.classList.remove('active');
@@ -790,33 +891,74 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Funciones de circuitos (Ejemplo, puedes expandir esto)
+    // Funciones de circuitos
     function loadSampleCircuits() {
         circuits = [
             {
                 id: 'circuit-1',
-                name: 'Circuito RC Básico (Ejemplo)',
+                name: 'Circuito LED Básico',
+                description: 'Circuito simple con batería, switch y LED',
+                components: [],
+                connections: []
+            },
+            {
+                id: 'circuit-2',
+                name: 'Circuito RC Básico',
                 description: 'Circuito de carga/descarga de capacitor',
-                components: [ /* ... datos de componentes ... */ ],
-                connections: [ /* ... datos de conexiones ... */ ]
+                components: [],
+                connections: []
             }
-            // Puedes añadir más circuitos de ejemplo aquí
         ];
-        // Por ahora, no carga automáticamente ningún circuito en el canvas
-        // updateCircuitsList(); // Si tienes una lista visible para el usuario
     }
     
     function updateCircuitsList() {
-        circuitsList.innerHTML = ''; // Limpiar lista actual
+        circuitsList.innerHTML = '';
         if (circuits.length === 0) {
-            circuitsList.innerHTML = '<li>No hay circuitos guardados.</li>';
+            circuitsList.innerHTML = '<li class="no-circuits">No hay circuitos guardados.</li>';
             return;
         }
+        
+        // Mejor diseño para la lista de circuitos
+        circuitsList.style.listStyle = 'none';
+        circuitsList.style.padding = '0';
+        circuitsList.style.margin = '0';
+        
         circuits.forEach(circuit => {
             const listItem = document.createElement('li');
             listItem.textContent = circuit.name;
             listItem.dataset.circuitId = circuit.id;
-            listItem.addEventListener('click', () => loadCircuit(circuit.id));
+            
+            // Estilos para los items de la lista
+            listItem.style.padding = '10px 15px';
+            listItem.style.marginBottom = '5px';
+            listItem.style.backgroundColor = '#f5f5f5';
+            listItem.style.borderRadius = '5px';
+            listItem.style.cursor = 'pointer';
+            listItem.style.transition = 'all 0.2s';
+            
+            // Efecto hover
+            listItem.addEventListener('mouseover', () => {
+                listItem.style.backgroundColor = '#e0e0e0';
+                listItem.style.transform = 'translateX(5px)';
+            });
+            
+            listItem.addEventListener('mouseout', () => {
+                listItem.style.backgroundColor = '#f5f5f5';
+                listItem.style.transform = 'translateX(0)';
+            });
+            
+            listItem.addEventListener('click', () => {
+                // Resaltar el circuito seleccionado
+                document.querySelectorAll('#circuitsList li').forEach(item => {
+                    item.style.backgroundColor = '#f5f5f5';
+                    item.style.fontWeight = 'normal';
+                });
+                listItem.style.backgroundColor = '#e0e0e0';
+                listItem.style.fontWeight = 'bold';
+                
+                loadCircuit(circuit.id);
+            });
+            
             circuitsList.appendChild(listItem);
         });
     }
@@ -829,22 +971,21 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        const newCircuitId = `circuit-${Date.now()}`; // ID simple
+        const newCircuitId = `circuit-${Date.now()}`;
         currentCircuit = {
             id: newCircuitId,
             name: circuitName,
-            description: '', // Podrías añadir un campo para esto
+            description: '',
             components: [],
             connections: []
         };
         circuits.push(currentCircuit);
         
-        clearCanvas(); // Limpiar el canvas para el nuevo circuito
+        clearCanvas();
         updateCircuitsList();
         hideModal('newCircuitModal');
         newCircuitForm.reset();
         showNotification('Éxito', `Nuevo circuito "${circuitName}" creado.`, 'success');
-        // Aquí podrías seleccionar este nuevo circuito como el activo en la UI
     }
 
     function loadCircuit(circuitId) {
@@ -855,31 +996,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         clearCanvas();
         currentCircuit = circuitToLoad;
-        nextComponentId = 1; // Resetear IDs para componentes del circuito cargado
+        nextComponentId = 1;
         nextConnectionId = 1;
 
         // Cargar componentes
         circuitToLoad.components.forEach(compData => {
             const addedComp = addComponent(compData.type, compData.x, compData.y);
-            // Sobrescribir propiedades si vienen del circuito guardado
             if (compData.properties) {
                 Object.assign(addedComp.properties, compData.properties);
-                // Actualizar el valor visual del componente si es necesario
                 updateComponentVisualValue(addedComp);
             }
         });
 
-        // Cargar conexiones (esto es más complejo si los IDs de componentes no coinciden)
-        // Para este ejemplo, asumimos que los IDs se regenerarán secuencialmente
-        // y que las conexiones en `circuitToLoad.connections` se refieren a los índices o IDs temporales.
-        // Una forma más robusta sería guardar IDs únicos y persistentes.
-        
-        // Simplificación: reconstruir conexiones basadas en los componentes recién añadidos
-        // Esto requiere que `circuitToLoad.connections` use referencias que puedan mapearse
-        // a los nuevos `comp-X` IDs. Por ejemplo, si guardas el índice del array de componentes.
-        // Ejemplo: { fromComponentIndex: 0, fromTerminal: 'right', toComponentIndex: 1, toTerminal: 'left' }
-
-        // O si los IDs `comp-X` son consistentes (requiere manejar `nextComponentId` cuidadosamente al guardar/cargar)
+        // Cargar conexiones
         circuitToLoad.connections.forEach(connData => {
             const fromComp = components.find(c => c.id === connData.fromComponent);
             const toComp = components.find(c => c.id === connData.toComponent);
@@ -910,9 +1039,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-
         showNotification('Información', `Circuito "${circuitToLoad.name}" cargado.`, 'info');
-        // Actualizar la UI si es necesario (nombre del circuito, etc.)
     }
     
     function updateComponentVisualValue(component) {
@@ -933,6 +1060,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case 'led':
                 valueEl.textContent = `${component.properties.forwardVoltage}V`;
+                const ledVisual = component.element.querySelector('.led-visual');
+                if (ledVisual) {
+                    ledVisual.style.backgroundColor = component.properties.color || 'red';
+                }
                 break;
             case 'battery':
                 valueEl.textContent = `${component.properties.voltage}V`;
@@ -942,10 +1073,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case 'switch':
                 valueEl.textContent = component.properties.isClosed ? 'ON' : 'OFF';
+                const switchVisual = component.element.querySelector('.switch-visual');
+                if (switchVisual) {
+                    if (component.properties.isClosed) {
+                        switchVisual.classList.add('on');
+                    } else {
+                        switchVisual.classList.remove('on');
+                    }
+                }
                 break;
         }
     }
-
 
     function clearCanvas() {
         components.forEach(comp => comp.element.remove());
@@ -957,11 +1095,10 @@ document.addEventListener('DOMContentLoaded', function() {
         nextConnectionId = 1;
         componentPropertiesContent.innerHTML = '<div class="no-component-selected">Selecciona un componente para ver/editar sus propiedades</div>';
         deleteComponentBtn.style.display = 'none';
-        resetSimulation(); // También resetea el estado de simulación
+        resetSimulation();
     }
 
-
-    // Funciones auxiliares (Modales, Notificaciones, Dragging)
+    // Funciones auxiliares
     function showModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) modal.style.display = 'flex';
@@ -972,7 +1109,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (modal) modal.style.display = 'none';
     }
 
-    function showNotification(title, message, type = 'info') { // type: info, success, error
+    function showNotification(title, message, type = 'info') {
         notification.innerHTML = `<strong>${title}:</strong> ${message}`;
         notification.className = `notification ${type}`;
         notification.style.display = 'block';
@@ -984,21 +1121,18 @@ document.addEventListener('DOMContentLoaded', function() {
     function startDrag(e) {
         if (!selectedComponent || !e.target.closest('.component') || e.target.classList.contains('component-terminal')) return;
         
-        // Asegurarse de que el componente clickeado es el seleccionado para arrastrar
         const targetComponentElement = e.target.closest('.component');
         if (selectedComponent.element !== targetComponentElement) {
-             // Si se hace clic en un componente diferente al seleccionado, selecciónalo primero
             const componentData = components.find(c => c.element === targetComponentElement);
             if (componentData) {
                 selectComponent(targetComponentElement, componentData.type, componentData.properties);
             } else {
-                return; // No se encontró el componente, no arrastrar
+                return;
             }
         }
 
         isDragging = true;
         selectedComponent.element.classList.add('dragging');
-        // Coordenadas relativas al componente, no al canvas, para evitar saltos
         dragStartX = e.clientX - selectedComponent.element.offsetLeft;
         dragStartY = e.clientY - selectedComponent.element.offsetTop;
         circuitStage.style.cursor = 'grabbing';
@@ -1006,16 +1140,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleDrag(e) {
         if (!isDragging || !selectedComponent) return;
-        e.preventDefault(); // Prevenir selección de texto u otros comportamientos por defecto
+        e.preventDefault();
 
-        const rect = circuitCanvas.getBoundingClientRect(); // Obtener límites del canvas para calcular pos. relativa
-        
-        // Nueva posición X, Y calculada restando el offset inicial del drag y la posición del canvas
+        const rect = circuitCanvas.getBoundingClientRect();
         let newX = e.clientX - dragStartX - rect.left;
         let newY = e.clientY - dragStartY - rect.top;
 
-        // Asegurarse de que el componente no se salga del circuitStage (o canvas)
-        // Las dimensiones del componente también deben ser consideradas para los límites derecho e inferior
         const compWidth = selectedComponent.element.offsetWidth;
         const compHeight = selectedComponent.element.offsetHeight;
 
@@ -1033,8 +1163,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isDragging || !selectedComponent) return;
         isDragging = false;
         selectedComponent.element.classList.remove('dragging');
-        circuitStage.style.cursor = ''; // Restaurar cursor
-        // selectedComponent = null; // No deseleccionar al terminar de arrastrar
+        circuitStage.style.cursor = '';
     }
 
     function updateConnectionsForComponent(componentId) {
@@ -1045,7 +1174,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const fromComp = components.find(c => c.id === conn.fromComponent);
             const toComp = components.find(c => c.id === conn.toComponent);
 
-            if (!fromComp || !toComp) return; // Si algún componente de la conexión no existe
+            if (!fromComp || !toComp) return;
 
             const fromTerminalEl = fromComp.element.querySelector(`.component-terminal[data-position="${conn.fromTerminal}"]`);
             const toTerminalEl = toComp.element.querySelector(`.component-terminal[data-position="${conn.toTerminal}"]`);
@@ -1070,18 +1199,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Carga inicial
-    // Puedes llamar a updateCircuitsList aquí si quieres que se muestre la lista al cargar la página
-    updateCircuitsList(); 
-    if (circuits.length > 0 && !currentCircuit) {
-        // Opcionalmente, cargar el primer circuito de la lista por defecto
-        // loadCircuit(circuits[0].id); 
-    } else if (!currentCircuit) {
-        // Si no hay circuitos, quizá crear uno vacío por defecto
-        // createNewCircuit({ preventDefault: () => {} }); // Simula un evento
-        // circuitNameInput.value = "Circuito por Defecto";
-        // document.querySelector('#newCircuitForm button[type="submit"]').click();
-        // O simplemente dejar el canvas vacío.
-    }
-
-
+    updateCircuitsList();
 });
