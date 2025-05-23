@@ -36,8 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inicialización
     initEventListeners();
-    loadSampleCircuits();
-    updateCircuitsList();
+    loadSampleCircuits(); // Carga circuitos de ejemplo si es necesario
+    // updateCircuitsList(); // Actualiza la lista de circuitos si tienes una
 
     // Funciones principales
     function initEventListeners() {
@@ -108,11 +108,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         switch(type) {
             case 'resistor':
-                properties = { resistance: 100 };
+                properties = { resistance: 100 }; // Valor por defecto
                 visualContent = `
                     <div class="component-header">
                         <span class="component-name">Resistor</span>
-                        <span class="component-value">100Ω</span>
+                        <span class="component-value">${properties.resistance}Ω</span>
                     </div>
                     <div class="component-visual">
                         <svg viewBox="0 0 24 24">
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     { position: 'right', type: 'terminal' }
                 ];
                 break;
-                
+            
             case 'capacitor':
                 properties = { capacitance: 0.001 }; // 1mF
                 visualContent = `
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     { position: 'right', type: 'terminal' }
                 ];
                 break;
-                
+            
             case 'inductor':
                 properties = { inductance: 0.1, resistance: 0, initialCurrent: 0 }; // 100mH
                 visualContent = `
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     { position: 'right', type: 'terminal' }
                 ];
                 break;
-                
+            
             case 'led':
                 properties = { forwardVoltage: 2, maxCurrent: 0.02, color: 'red' }; // 2V, 20mA
                 visualContent = `
@@ -181,11 +181,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
                 terminals = [
-                    { position: 'left', type: 'anode' },
-                    { position: 'right', type: 'cathode' }
+                    { position: 'left', type: 'anode' },    // Terminal izquierdo como ánodo
+                    { position: 'right', type: 'cathode' } // Terminal derecho como cátodo
                 ];
                 break;
-                
+            
             case 'switch':
                 properties = { isClosed: false };
                 visualContent = `
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     { position: 'right', type: 'terminal' }
                 ];
                 break;
-                
+            
             case 'battery':
                 properties = { voltage: 9 }; // 9V
                 visualContent = `
@@ -224,11 +224,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
                 terminals = [
-                    { position: 'left', type: 'negative' },
-                    { position: 'right', type: 'positive' }
+                    { position: 'left', type: 'negative' }, // Negativo a la izquierda
+                    { position: 'right', type: 'positive' } // Positivo a la derecha
                 ];
                 break;
-                
+            
             case 'ac_source':
                 properties = { 
                     amplitude: 5, 
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     { position: 'right', type: 'hot' }
                 ];
                 break;
-                
+            
             case 'ground':
                 properties = {};
                 visualContent = `
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const terminalEl = document.createElement('div');
             terminalEl.className = `component-terminal terminal-${terminal.position}`;
             terminalEl.dataset.position = terminal.position;
-            terminalEl.dataset.type = terminal.type;
+            terminalEl.dataset.type = terminal.type; // Asegúrate de que 'type' se almacena aquí
             component.appendChild(terminalEl);
             
             // Eventos para terminales
@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
             type,
             element: component,
             properties,
-            terminals,
+            terminals, // Guarda la info de los terminales incluyendo su tipo (anode/cathode)
             x,
             y
         };
@@ -337,59 +337,60 @@ document.addEventListener('DOMContentLoaded', function() {
         
         switch(type) {
             case 'resistor':
+                // MODIFICACIÓN: Mostrar como texto, no como input
                 propertiesHTML = `
                     <div class="property-group">
                         <div class="property-item">
                             <label class="property-label">Resistencia:</label>
-                            <input type="number" class="property-input" value="${properties.resistance}" min="0.001" step="0.001">
+                            <span class="property-value-display" style="padding: 5px; border: 1px solid #ccc; background-color: #f9f9f9; display: inline-block; min-width: 50px; text-align: right;">${properties.resistance}</span>
                             <span class="property-unit">Ω</span>
                         </div>
                     </div>
                 `;
                 break;
-                
+            
             case 'capacitor':
                 propertiesHTML = `
                     <div class="property-group">
                         <div class="property-item">
                             <label class="property-label">Capacitancia:</label>
-                            <input type="number" class="property-input" value="${properties.capacitance}" min="0.000000001" step="0.000000001">
+                            <input type="number" class="property-input" data-property="capacitance" value="${properties.capacitance}" min="0.000000001" step="0.000000001">
                             <span class="property-unit">F</span>
                         </div>
                     </div>
                 `;
                 break;
-                
+            
             case 'inductor':
                 propertiesHTML = `
                     <div class="property-group">
                         <div class="property-item">
                             <label class="property-label">Inductancia:</label>
-                            <input type="number" class="property-input" value="${properties.inductance}" min="0.000001" step="0.000001">
+                            <input type="number" class="property-input" data-property="inductance" value="${properties.inductance}" min="0.000001" step="0.000001">
                             <span class="property-unit">H</span>
                         </div>
                     </div>
                 `;
                 break;
-                
+            
             case 'led':
                 propertiesHTML = `
                     <div class="property-group">
                         <div class="property-item">
                             <label class="property-label">Voltaje directo:</label>
-                            <input type="number" class="property-input" value="${properties.forwardVoltage}" min="1" max="5" step="0.1">
+                            <input type="number" class="property-input" data-property="forwardVoltage" value="${properties.forwardVoltage}" min="1" max="5" step="0.1">
                             <span class="property-unit">V</span>
                         </div>
                     </div>
                 `;
                 break;
-                
+            
             case 'switch':
                 propertiesHTML = `
                     <div class="property-group">
                         <div class="property-item">
                             <label class="property-label">Estado:</label>
-                            <select class="property-input">
+                            <select class="property-input" data-property="isClosed">
                                 <option value="false" ${!properties.isClosed ? 'selected' : ''}>Abierto</option>
                                 <option value="true" ${properties.isClosed ? 'selected' : ''}>Cerrado</option>
                             </select>
@@ -397,40 +398,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
                 break;
-                
+            
             case 'battery':
                 propertiesHTML = `
                     <div class="property-group">
                         <div class="property-item">
                             <label class="property-label">Voltaje:</label>
-                            <input type="number" class="property-input" value="${properties.voltage}" min="1" max="24" step="0.1">
+                            <input type="number" class="property-input" data-property="voltage" value="${properties.voltage}" min="1" max="24" step="0.1">
                             <span class="property-unit">V</span>
                         </div>
                     </div>
                 `;
                 break;
-                
+            
             case 'ac_source':
                 propertiesHTML = `
                     <div class="property-group">
                         <div class="property-item">
                             <label class="property-label">Amplitud:</label>
-                            <input type="number" class="property-input" value="${properties.amplitude}" min="0.1" step="0.1">
+                            <input type="number" class="property-input" data-property="amplitude" value="${properties.amplitude}" min="0.1" step="0.1">
                             <span class="property-unit">V</span>
                         </div>
                         <div class="property-item">
                             <label class="property-label">Frecuencia:</label>
-                            <input type="number" class="property-input" value="${properties.frequency}" min="0.1" step="0.1">
+                            <input type="number" class="property-input" data-property="frequency" value="${properties.frequency}" min="0.1" step="0.1">
                             <span class="property-unit">Hz</span>
                         </div>
                     </div>
                 `;
+                break;
+            default:
+                propertiesHTML = '<div class="no-properties">No hay propiedades para este componente.</div>';
                 break;
         }
         
         componentPropertiesContent.innerHTML = propertiesHTML;
         
         // Actualizar propiedades cuando cambian los inputs
+        // Se asegura de que solo los elementos .property-input tengan este listener
         document.querySelectorAll('.property-input').forEach(input => {
             input.addEventListener('change', function() {
                 updateComponentProperties(selectedComponent, this);
@@ -439,42 +444,47 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateComponentProperties(component, input) {
-        const propertyName = input.previousElementSibling.textContent.replace(':', '').trim().toLowerCase();
-        const propertyValue = input.value;
-        
+        // const propertyName = input.previousElementSibling.textContent.replace(':', '').trim().toLowerCase(); // Esto podría ser frágil
+        const propertyName = input.dataset.property; // Usar data-property es más robusto
+        let propertyValue = input.value;
+
+        if (!component || !propertyName) return; // Salir si no hay componente o nombre de propiedad
+
         switch(component.type) {
-            case 'resistor':
-                if (propertyName === 'resistencia') {
-                    component.properties.resistance = parseFloat(propertyValue);
-                    component.element.querySelector('.component-value').textContent = `${propertyValue}Ω`;
-                }
+            // El caso 'resistor' ya no necesita estar aquí si su valor es fijo desde el panel.
+            // Si el valor de resistencia se pudiera cambiar programáticamente de otra forma,
+            // aún se necesitaría la lógica para actualizar .component-value
+            case 'resistor': 
+                // Como el input fue removido, esta parte no se llamará desde un 'change' event del panel.
+                // Si necesitas actualizar el valor visual por otros medios:
+                // component.element.querySelector('.component-value').textContent = `${component.properties.resistance}Ω`;
                 break;
-                
+            
             case 'capacitor':
-                if (propertyName === 'capacitancia') {
+                if (propertyName === 'capacitance') {
                     component.properties.capacitance = parseFloat(propertyValue);
-                    const value = propertyValue >= 0.001 ? `${propertyValue * 1000}mF` : `${propertyValue * 1000000}µF`;
+                    const value = propertyValue >= 0.001 ? `${parseFloat(propertyValue) * 1000}mF` : `${parseFloat(propertyValue) * 1000000}µF`;
                     component.element.querySelector('.component-value').textContent = value;
                 }
                 break;
-                
+            
             case 'inductor':
-                if (propertyName === 'inductancia') {
+                if (propertyName === 'inductance') {
                     component.properties.inductance = parseFloat(propertyValue);
-                    const value = propertyValue >= 1 ? `${propertyValue}H` : `${propertyValue * 1000}mH`;
+                    const value = propertyValue >= 1 ? `${propertyValue}H` : `${parseFloat(propertyValue) * 1000}mH`;
                     component.element.querySelector('.component-value').textContent = value;
                 }
                 break;
-                
+            
             case 'led':
-                if (propertyName === 'voltaje directo') {
+                if (propertyName === 'forwardVoltage') {
                     component.properties.forwardVoltage = parseFloat(propertyValue);
                     component.element.querySelector('.component-value').textContent = `${propertyValue}V`;
                 }
                 break;
-                
+            
             case 'switch':
-                if (propertyName === 'estado') {
+                if (propertyName === 'isClosed') {
                     component.properties.isClosed = propertyValue === 'true';
                     component.element.querySelector('.component-value').textContent = component.properties.isClosed ? 'ON' : 'OFF';
                     const switchVisual = component.element.querySelector('.switch-visual');
@@ -485,19 +495,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 break;
-                
+            
             case 'battery':
-                if (propertyName === 'voltaje') {
+                if (propertyName === 'voltage') {
                     component.properties.voltage = parseFloat(propertyValue);
                     component.element.querySelector('.component-value').textContent = `${propertyValue}V`;
                 }
                 break;
-                
+            
             case 'ac_source':
-                if (propertyName === 'amplitud') {
+                if (propertyName === 'amplitude') {
                     component.properties.amplitude = parseFloat(propertyValue);
                     component.element.querySelector('.component-value').textContent = `${propertyValue}V~`;
-                } else if (propertyName === 'frecuencia') {
+                } else if (propertyName === 'frequency') {
                     component.properties.frequency = parseFloat(propertyValue);
                 }
                 break;
@@ -536,11 +546,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const terminal = e.target;
         const componentEl = terminal.closest('.component');
-        const component = components.find(c => c.id === componentEl.id);
+        const componentData = components.find(c => c.id === componentEl.id); // Cambié nombre a componentData para evitar conflicto
         
         selectedTerminal = {
-            component: component.id,
-            terminal: terminal,
+            componentId: componentData.id, // Guardamos ID del componente
+            terminalElement: terminal,     // Guardamos el elemento del terminal
+            terminalPosition: terminal.dataset.position, // Guardamos la posición (left, right, etc.)
+            terminalType: terminal.dataset.type,         // Guardamos el tipo (anode, cathode, terminal)
             x: terminal.offsetLeft + terminal.offsetWidth / 2 + componentEl.offsetLeft,
             y: terminal.offsetTop + terminal.offsetHeight / 2 + componentEl.offsetTop
         };
@@ -588,17 +600,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // Verificar si se soltó sobre otro terminal
         const target = document.elementFromPoint(e.clientX, e.clientY);
         if (target && target.classList.contains('component-terminal')) {
-            const terminal = target;
-            const componentEl = terminal.closest('.component');
-            const component = components.find(c => c.id === componentEl.id);
+            const toTerminalElement = target;
+            const toComponentEl = toTerminalElement.closest('.component');
+            const toComponentData = components.find(c => c.id === toComponentEl.id);
             
-            // No permitir conexión consigo mismo
-            if (component.id !== selectedTerminal.component) {
+            // No permitir conexión consigo mismo (mismo componente, diferente terminal está bien si se implementara)
+            // Aquí la validación es simple: no conectar un componente a sí mismo.
+            if (toComponentData.id !== selectedTerminal.componentId) {
                 createConnection(selectedTerminal, { 
-                    component: component.id, 
-                    terminal: terminal,
-                    x: terminal.offsetLeft + terminal.offsetWidth / 2 + componentEl.offsetLeft,
-                    y: terminal.offsetTop + terminal.offsetHeight / 2 + componentEl.offsetTop
+                    componentId: toComponentData.id, 
+                    terminalElement: toTerminalElement,
+                    terminalPosition: toTerminalElement.dataset.position,
+                    terminalType: toTerminalElement.dataset.type,
+                    x: toTerminalElement.offsetLeft + toTerminalElement.offsetWidth / 2 + toComponentEl.offsetLeft,
+                    y: toTerminalElement.offsetTop + toTerminalElement.offsetHeight / 2 + toComponentEl.offsetTop
                 });
             }
         }
@@ -622,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Calcular puntos de control para una curva suave
         const midX = (from.x + to.x) / 2;
-        const midY = (from.y + to.y) / 2;
+        // const midY = (from.y + to.y) / 2; // No usado en la d actual
         
         // Crear una curva Bézier
         const d = `M ${from.x} ${from.y} C ${midX} ${from.y}, ${midX} ${to.y}, ${to.x} ${to.y}`;
@@ -633,16 +648,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Agregar a la lista de conexiones
         connections.push({
             id,
-            fromComponent: from.component,
-            fromTerminal: from.terminal.dataset.position,
-            toComponent: to.component,
-            toTerminal: to.terminal.dataset.position,
+            fromComponent: from.componentId,
+            fromTerminal: from.terminalPosition, // Usar la posición del terminal
+            toComponent: to.componentId,
+            toTerminal: to.terminalPosition,   // Usar la posición del terminal
             element: wire
         });
         
         // Marcar terminales como conectados
-        from.terminal.classList.add('connected');
-        to.terminal.classList.add('connected');
+        from.terminalElement.classList.add('connected');
+        to.terminalElement.classList.add('connected');
     }
 
     // Funciones de simulación
@@ -680,6 +695,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Quitar marcas de simulación
         components.forEach(comp => {
             comp.element.classList.remove('simulating');
+            // Resetear estado visual de LEDs
+            if (comp.type === 'led') {
+                const ledVisual = comp.element.querySelector('.led-visual');
+                if (ledVisual) {
+                    ledVisual.classList.remove('on');
+                    ledVisual.style.opacity = 1; // O el valor por defecto
+                }
+            }
         });
         
         // Quitar marcas de conexiones activas
@@ -718,390 +741,347 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Simular LEDs
-        components.filter(c => c.type === 'led').forEach(led => {
-            const ledVisual = led.element.querySelector('.led-visual');
+        // MODIFICACIÓN: Simular LEDs solo si están conectados
+        components.filter(c => c.type === 'led').forEach(ledComponent => {
+            const ledVisual = ledComponent.element.querySelector('.led-visual');
             if (ledVisual) {
-                ledVisual.classList.add('on');
-                const randomBrightness = 0.3 + Math.random() * 0.7;
-                ledVisual.style.opacity = randomBrightness;
+                // Necesitamos saber las posiciones de los terminales del LED (e.g., 'left' para ánodo, 'right' para cátodo)
+                // Esta información debe estar en ledComponent.terminals
+                const anodeTerminalInfo = ledComponent.terminals.find(t => t.type === 'anode');
+                const cathodeTerminalInfo = ledComponent.terminals.find(t => t.type === 'cathode');
+
+                if (!anodeTerminalInfo || !cathodeTerminalInfo) {
+                    // Si no se definieron correctamente los terminales del LED
+                    ledVisual.classList.remove('on');
+                    ledVisual.style.opacity = 1; // Apagado
+                    return; 
+                }
+
+                const isAnodeConnected = connections.some(conn =>
+                    (conn.fromComponent === ledComponent.id && conn.fromTerminal === anodeTerminalInfo.position) ||
+                    (conn.toComponent === ledComponent.id && conn.toTerminal === anodeTerminalInfo.position)
+                );
+                const isCathodeConnected = connections.some(conn =>
+                    (conn.fromComponent === ledComponent.id && conn.fromTerminal === cathodeTerminalInfo.position) ||
+                    (conn.toComponent === ledComponent.id && conn.toTerminal === cathodeTerminalInfo.position)
+                );
+
+                if (isAnodeConnected && isCathodeConnected) { 
+                    // Lógica de encendido (aún simplificada, sin cálculo de corriente/voltaje real)
+                    ledVisual.classList.add('on');
+                    const randomBrightness = 0.3 + Math.random() * 0.7; 
+                    ledVisual.style.opacity = randomBrightness;
+                } else {
+                    ledVisual.classList.remove('on');
+                    ledVisual.style.opacity = 1; // O un valor por defecto para apagado
+                }
             }
         });
         
-        // Simular conexiones activas
+        // Simular conexiones activas (esto es solo visual, no afecta la lógica del circuito)
         connections.forEach(conn => {
-            if (Math.floor(time * 2) % 2 === 0) {
-                conn.element.classList.add('active');
+            // Ejemplo de animación simple para el cable
+            if (isSimulating) { // Solo animar si la simulación está activa
+                 // Esta animación de parpadeo puede ser muy básica o mejorada
+                conn.element.classList.toggle('active', Math.floor(time * 2) % 2 === 0);
             } else {
                 conn.element.classList.remove('active');
             }
         });
     }
 
-    // Funciones de circuitos
+    // Funciones de circuitos (Ejemplo, puedes expandir esto)
     function loadSampleCircuits() {
         circuits = [
             {
                 id: 'circuit-1',
-                name: 'Circuito RC Básico',
+                name: 'Circuito RC Básico (Ejemplo)',
                 description: 'Circuito de carga/descarga de capacitor',
-                components: [
-                    { type: 'battery', x: 100, y: 150, properties: { voltage: 9 } },
-                    { type: 'resistor', x: 250, y: 150, properties: { resistance: 1000 } },
-                    { type: 'capacitor', x: 400, y: 150, properties: { capacitance: 0.0001 } },
-                    { type: 'ground', x: 400, y: 250 }
-                ],
-                connections: [
-                    { fromComponent: 'comp-1', fromTerminal: 'right', toComponent: 'comp-2', toTerminal: 'left' },
-                    { fromComponent: 'comp-2', fromTerminal: 'right', toComponent: 'comp-3', toTerminal: 'left' },
-                    { fromComponent: 'comp-3', fromTerminal: 'right', toComponent: 'comp-4', toTerminal: 'top' }
-                ],
-                createdAt: '2023-01-01T00:00:00Z'
-            },
-            {
-                id: 'circuit-2',
-                name: 'Divisor de Voltaje',
-                description: 'Circuito divisor de voltaje con resistencias',
-                components: [
-                    { type: 'battery', x: 100, y: 150, properties: { voltage: 12 } },
-                    { type: 'resistor', x: 250, y: 100, properties: { resistance: 1000 } },
-                    { type: 'resistor', x: 250, y: 200, properties: { resistance: 2000 } },
-                    { type: 'ground', x: 400, y: 200 }
-                ],
-                connections: [
-                    { fromComponent: 'comp-1', fromTerminal: 'right', toComponent: 'comp-2', toTerminal: 'left' },
-                    { fromComponent: 'comp-2', fromTerminal: 'right', toComponent: 'comp-3', toTerminal: 'left' },
-                    { fromComponent: 'comp-3', fromTerminal: 'right', toComponent: 'comp-4', toTerminal: 'top' }
-                ],
-                createdAt: '2023-01-02T00:00:00Z'
-            },
-            {
-                id: 'circuit-3',
-                name: 'LED con Resistencia',
-                description: 'Circuito básico para encender un LED',
-                components: [
-                    { type: 'battery', x: 100, y: 150, properties: { voltage: 5 } },
-                    { type: 'resistor', x: 250, y: 150, properties: { resistance: 220 } },
-                    { type: 'led', x: 400, y: 150, properties: { forwardVoltage: 2, maxCurrent: 0.02, color: 'red' } },
-                    { type: 'ground', x: 400, y: 250 }
-                ],
-                connections: [
-                    { fromComponent: 'comp-1', fromTerminal: 'right', toComponent: 'comp-2', toTerminal: 'left' },
-                    { fromComponent: 'comp-2', fromTerminal: 'right', toComponent: 'comp-3', toTerminal: 'left' },
-                    { fromComponent: 'comp-3', fromTerminal: 'right', toComponent: 'comp-4', toTerminal: 'top' }
-                ],
-                createdAt: '2023-01-03T00:00:00Z'
+                components: [ /* ... datos de componentes ... */ ],
+                connections: [ /* ... datos de conexiones ... */ ]
             }
+            // Puedes añadir más circuitos de ejemplo aquí
         ];
+        // Por ahora, no carga automáticamente ningún circuito en el canvas
+        // updateCircuitsList(); // Si tienes una lista visible para el usuario
+    }
+    
+    function updateCircuitsList() {
+        circuitsList.innerHTML = ''; // Limpiar lista actual
+        if (circuits.length === 0) {
+            circuitsList.innerHTML = '<li>No hay circuitos guardados.</li>';
+            return;
+        }
+        circuits.forEach(circuit => {
+            const listItem = document.createElement('li');
+            listItem.textContent = circuit.name;
+            listItem.dataset.circuitId = circuit.id;
+            listItem.addEventListener('click', () => loadCircuit(circuit.id));
+            circuitsList.appendChild(listItem);
+        });
     }
 
-    function createNewCircuit(e) {
-        e.preventDefault();
+    function createNewCircuit(event) {
+        event.preventDefault();
+        const circuitName = circuitNameInput.value.trim();
+        if (!circuitName) {
+            showNotification('Error', 'El nombre del circuito no puede estar vacío.', 'error');
+            return;
+        }
         
-        const name = circuitNameInput.value.trim();
-        if (!name) return;
-        
-        const description = document.getElementById('circuitDescriptionInput').value.trim();
-        const id = `circuit-${Date.now()}`;
-        
-        const circuit = {
-            id,
-            name,
-            description,
+        const newCircuitId = `circuit-${Date.now()}`; // ID simple
+        currentCircuit = {
+            id: newCircuitId,
+            name: circuitName,
+            description: '', // Podrías añadir un campo para esto
             components: [],
-            connections: [],
-            createdAt: new Date().toISOString()
+            connections: []
         };
+        circuits.push(currentCircuit);
         
-        circuits.push(circuit);
-        currentCircuit = circuit;
-        
-        // Limpiar y preparar nuevo circuito
-        resetSimulation();
-        clearCircuit();
-        
-        // Actualizar lista y cerrar modal
+        clearCanvas(); // Limpiar el canvas para el nuevo circuito
         updateCircuitsList();
         hideModal('newCircuitModal');
         newCircuitForm.reset();
-        
-        showNotification('Circuito creado', `"${name}" ha sido creado correctamente`, 'success');
-    }
-
-    function updateCircuitsList() {
-        circuitsList.innerHTML = '';
-        
-        circuits.forEach(circuit => {
-            const item = document.createElement('div');
-            item.className = `circuit-item ${currentCircuit?.id === circuit.id ? 'active' : ''}`;
-            item.dataset.circuitId = circuit.id;
-            
-            item.innerHTML = `
-                <div class="circuit-item-name">${circuit.name}</div>
-                <div class="circuit-item-info">${circuit.description || 'Sin descripción'}</div>
-                <button class="btn btn-danger" data-action="delete">Eliminar</button>
-                <button class="btn btn-primary" data-action="load">Cargar</button>
-            `;
-            
-            item.querySelector('[data-action="delete"]').addEventListener('click', function(e) {
-                e.stopPropagation();
-                deleteCircuit(circuit.id);
-            });
-            
-            item.querySelector('[data-action="load"]').addEventListener('click', function(e) {
-                e.stopPropagation();
-                loadCircuit(circuit.id);
-            });
-            
-            item.addEventListener('click', function() {
-                loadCircuit(circuit.id);
-            });
-            
-            circuitsList.appendChild(item);
-        });
+        showNotification('Éxito', `Nuevo circuito "${circuitName}" creado.`, 'success');
+        // Aquí podrías seleccionar este nuevo circuito como el activo en la UI
     }
 
     function loadCircuit(circuitId) {
-        const circuit = circuits.find(c => c.id === circuitId);
-        if (!circuit) return;
+        const circuitToLoad = circuits.find(c => c.id === circuitId);
+        if (!circuitToLoad) {
+            showNotification('Error', 'No se pudo cargar el circuito.', 'error');
+            return;
+        }
+        clearCanvas();
+        currentCircuit = circuitToLoad;
+        nextComponentId = 1; // Resetear IDs para componentes del circuito cargado
+        nextConnectionId = 1;
+
+        // Cargar componentes
+        circuitToLoad.components.forEach(compData => {
+            const addedComp = addComponent(compData.type, compData.x, compData.y);
+            // Sobrescribir propiedades si vienen del circuito guardado
+            if (compData.properties) {
+                Object.assign(addedComp.properties, compData.properties);
+                // Actualizar el valor visual del componente si es necesario
+                updateComponentVisualValue(addedComp);
+            }
+        });
+
+        // Cargar conexiones (esto es más complejo si los IDs de componentes no coinciden)
+        // Para este ejemplo, asumimos que los IDs se regenerarán secuencialmente
+        // y que las conexiones en `circuitToLoad.connections` se refieren a los índices o IDs temporales.
+        // Una forma más robusta sería guardar IDs únicos y persistentes.
         
-        currentCircuit = circuit;
-        resetSimulation();
-        clearCircuit();
-        
-        // Reiniciar contadores de IDs
+        // Simplificación: reconstruir conexiones basadas en los componentes recién añadidos
+        // Esto requiere que `circuitToLoad.connections` use referencias que puedan mapearse
+        // a los nuevos `comp-X` IDs. Por ejemplo, si guardas el índice del array de componentes.
+        // Ejemplo: { fromComponentIndex: 0, fromTerminal: 'right', toComponentIndex: 1, toTerminal: 'left' }
+
+        // O si los IDs `comp-X` son consistentes (requiere manejar `nextComponentId` cuidadosamente al guardar/cargar)
+        circuitToLoad.connections.forEach(connData => {
+            const fromComp = components.find(c => c.id === connData.fromComponent);
+            const toComp = components.find(c => c.id === connData.toComponent);
+
+            if (fromComp && toComp) {
+                const fromTerminalEl = fromComp.element.querySelector(`.component-terminal[data-position="${connData.fromTerminal}"]`);
+                const toTerminalEl = toComp.element.querySelector(`.component-terminal[data-position="${connData.toTerminal}"]`);
+
+                if (fromTerminalEl && toTerminalEl) {
+                     const fromTerminalData = {
+                        componentId: fromComp.id,
+                        terminalElement: fromTerminalEl,
+                        terminalPosition: connData.fromTerminal,
+                        terminalType: fromTerminalEl.dataset.type,
+                        x: fromTerminalEl.offsetLeft + fromTerminalEl.offsetWidth / 2 + fromComp.element.offsetLeft,
+                        y: fromTerminalEl.offsetTop + fromTerminalEl.offsetHeight / 2 + fromComp.element.offsetTop
+                    };
+                    const toTerminalData = {
+                        componentId: toComp.id,
+                        terminalElement: toTerminalEl,
+                        terminalPosition: connData.toTerminal,
+                        terminalType: toTerminalEl.dataset.type,
+                        x: toTerminalEl.offsetLeft + toTerminalEl.offsetWidth / 2 + toComp.element.offsetLeft,
+                        y: toTerminalEl.offsetTop + toTerminalEl.offsetHeight / 2 + toComp.element.offsetTop
+                    };
+                    createConnection(fromTerminalData, toTerminalData);
+                }
+            }
+        });
+
+
+        showNotification('Información', `Circuito "${circuitToLoad.name}" cargado.`, 'info');
+        // Actualizar la UI si es necesario (nombre del circuito, etc.)
+    }
+    
+    function updateComponentVisualValue(component) {
+        const valueEl = component.element.querySelector('.component-value');
+        if (!valueEl) return;
+
+        switch(component.type) {
+            case 'resistor':
+                valueEl.textContent = `${component.properties.resistance}Ω`;
+                break;
+            case 'capacitor':
+                const capValue = component.properties.capacitance;
+                valueEl.textContent = capValue >= 0.001 ? `${parseFloat(capValue) * 1000}mF` : `${parseFloat(capValue) * 1000000}µF`;
+                break;
+            case 'inductor':
+                const indValue = component.properties.inductance;
+                valueEl.textContent = indValue >= 1 ? `${indValue}H` : `${parseFloat(indValue) * 1000}mH`;
+                break;
+            case 'led':
+                valueEl.textContent = `${component.properties.forwardVoltage}V`;
+                break;
+            case 'battery':
+                valueEl.textContent = `${component.properties.voltage}V`;
+                break;
+            case 'ac_source':
+                valueEl.textContent = `${component.properties.amplitude}V~`;
+                break;
+            case 'switch':
+                valueEl.textContent = component.properties.isClosed ? 'ON' : 'OFF';
+                break;
+        }
+    }
+
+
+    function clearCanvas() {
+        components.forEach(comp => comp.element.remove());
+        connections.forEach(conn => conn.element.remove());
+        components = [];
+        connections = [];
+        selectedComponent = null;
         nextComponentId = 1;
         nextConnectionId = 1;
-        
-        // Cargar componentes
-        circuit.components.forEach(compData => {
-            const component = addComponent(compData.type, compData.x, compData.y);
-            
-            // Actualizar propiedades
-            Object.keys(compData.properties).forEach(prop => {
-                component.properties[prop] = compData.properties[prop];
-            });
-            
-            // Actualizar visualización de propiedades
-            if (component.element.querySelector('.component-value')) {
-                let valueText = '';
-                switch(compData.type) {
-                    case 'resistor':
-                        valueText = `${compData.properties.resistance}Ω`;
-                        break;
-                    case 'capacitor':
-                        valueText = compData.properties.capacitance >= 0.001 ? 
-                            `${compData.properties.capacitance * 1000}mF` : 
-                            `${compData.properties.capacitance * 1000000}µF`;
-                        break;
-                    case 'inductor':
-                        valueText = compData.properties.inductance >= 1 ? 
-                            `${compData.properties.inductance}H` : 
-                            `${compData.properties.inductance * 1000}mH`;
-                        break;
-                    case 'led':
-                        valueText = `${compData.properties.forwardVoltage}V`;
-                        break;
-                    case 'battery':
-                        valueText = `${compData.properties.voltage}V`;
-                        break;
-                    case 'ac_source':
-                        valueText = `${compData.properties.amplitude}V~`;
-                        break;
-                }
-                component.element.querySelector('.component-value').textContent = valueText;
-            }
-        });
-        
-        // Cargar conexiones (necesitamos esperar un momento para que los componentes se rendericen)
-        setTimeout(() => {
-            circuit.connections.forEach(connData => {
-                const fromComponent = components.find(c => c.id === `comp-${connData.fromComponent.split('-')[1]}`);
-                const toComponent = components.find(c => c.id === `comp-${connData.toComponent.split('-')[1]}`);
-                
-                if (fromComponent && toComponent) {
-                    const fromTerminal = fromComponent.element.querySelector(`.terminal-${connData.fromTerminal}`);
-                    const toTerminal = toComponent.element.querySelector(`.terminal-${connData.toTerminal}`);
-                    
-                    if (fromTerminal && toTerminal) {
-                        const fromRect = fromTerminal.getBoundingClientRect();
-                        const toRect = toTerminal.getBoundingClientRect();
-                        const canvasRect = circuitCanvas.getBoundingClientRect();
-                        
-                        createConnection(
-                            {
-                                component: fromComponent.id,
-                                terminal: fromTerminal,
-                                x: fromRect.left + fromRect.width / 2 - canvasRect.left,
-                                y: fromRect.top + fromRect.height / 2 - canvasRect.top
-                            },
-                            {
-                                component: toComponent.id,
-                                terminal: toTerminal,
-                                x: toRect.left + toRect.width / 2 - canvasRect.left,
-                                y: toRect.top + toRect.height / 2 - canvasRect.top
-                            }
-                        );
-                    }
-                }
-            });
-        }, 50);
-    
-        // Actualizar lista
-        updateCircuitsList();
-        
-        showNotification('Circuito cargado', `"${circuit.name}" ha sido cargado`, 'success');
-    }
-
-    function deleteCircuit(circuitId) {
-        if (currentCircuit?.id === circuitId) {
-            currentCircuit = null;
-            resetSimulation();
-            clearCircuit();
-        }
-        
-        circuits = circuits.filter(c => c.id !== circuitId);
-        updateCircuitsList();
-        
-        showNotification('Circuito eliminado', 'El circuito ha sido eliminado', 'error');
-    }
-
-    function clearCircuit() {
-        // Eliminar todos los componentes
-        components.forEach(c => c.element.remove());
-        components = [];
-        
-        // Eliminar todas las conexiones
-        connections.forEach(c => c.element.remove());
-        connections = [];
-        
-        // Limpiar selección
-        selectedComponent = null;
         componentPropertiesContent.innerHTML = '<div class="no-component-selected">Selecciona un componente para ver/editar sus propiedades</div>';
         deleteComponentBtn.style.display = 'none';
+        resetSimulation(); // También resetea el estado de simulación
     }
 
-    // Funciones de arrastre
-    function startDrag(e) {
-        if (e.target.classList.contains('component-terminal')) return;
-        
-        const component = e.target.closest('.component');
-        if (!component) return;
-        
-        isDragging = true;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        
-        // Guardar la posición inicial del componente
-        const comp = components.find(c => c.id === component.id);
-        if (comp) {
-            comp.startX = parseInt(component.style.left) || 0;
-            comp.startY = parseInt(component.style.top) || 0;
-            
-            // Seleccionar el componente si no está seleccionado
-            if (!component.classList.contains('selected')) {
-                selectComponent(component, comp.type, comp.properties);
-            }
-        }
-        
-        e.preventDefault();
-    }
 
-    function handleDrag(e) {
-        if (!isDragging || !selectedComponent) return;
-        
-        const dx = e.clientX - dragStartX;
-        const dy = e.clientY - dragStartY;
-        
-        const component = selectedComponent.element;
-        
-        // Calcular nueva posición basada en la posición inicial
-        const newX = selectedComponent.startX + dx;
-        const newY = selectedComponent.startY + dy;
-        
-        component.style.left = `${newX}px`;
-        component.style.top = `${newY}px`;
-        
-        // Actualizar posición en el objeto componente
-        selectedComponent.x = newX;
-        selectedComponent.y = newY;
-        
-        // Actualizar conexiones
-        updateConnections(selectedComponent.id);
-        
-        e.preventDefault();
-    }
-
-    function endDrag(e) {
-        isDragging = false;
-        e.preventDefault();
-    }
-
-    function updateConnections(componentId) {
-        const component = components.find(c => c.id === componentId);
-        if (!component) return;
-        
-        const componentEl = component.element;
-        const componentRect = componentEl.getBoundingClientRect();
-        const canvasRect = circuitCanvas.getBoundingClientRect();
-        
-        connections.filter(conn => 
-            conn.fromComponent === componentId || conn.toComponent === componentId
-        ).forEach(conn => {
-            const fromComponent = components.find(c => c.id === conn.fromComponent);
-            const toComponent = components.find(c => c.id === conn.toComponent);
-            
-            if (!fromComponent || !toComponent) return;
-            
-            const fromTerminal = fromComponent.element.querySelector(`.terminal-${conn.fromTerminal}`);
-            const toTerminal = toComponent.element.querySelector(`.terminal-${conn.toTerminal}`);
-            
-            if (!fromTerminal || !toTerminal) return;
-            
-            const fromRect = fromTerminal.getBoundingClientRect();
-            const toRect = toTerminal.getBoundingClientRect();
-            
-            const fromX = fromRect.left + fromRect.width / 2 - canvasRect.left;
-            const fromY = fromRect.top + fromRect.height / 2 - canvasRect.top;
-            const toX = toRect.left + toRect.width / 2 - canvasRect.left;
-            const toY = toRect.top + toRect.height / 2 - canvasRect.top;
-            
-            // Calcular puntos de control para una curva suave
-            const midX = (fromX + toX) / 2;
-            const midY = (fromY + toY) / 2;
-            
-            // Actualizar la curva Bézier
-            const d = `M ${fromX} ${fromY} C ${midX} ${fromY}, ${midX} ${toY}, ${toX} ${toY}`;
-            conn.element.setAttribute('d', d);
-        });
-    }
-
-    // Funciones de utilidad
+    // Funciones auxiliares (Modales, Notificaciones, Dragging)
     function showModal(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) modal.classList.add('active');
+        if (modal) modal.style.display = 'flex';
     }
 
     function hideModal(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) modal.classList.remove('active');
+        if (modal) modal.style.display = 'none';
     }
 
-    function showNotification(title, message, type = 'info') {
-        notification.querySelector('#notificationTitle').textContent = title;
-        notification.querySelector('#notificationMessage').textContent = message;
-        
-        notification.className = 'notification';
-        notification.classList.add(type === 'error' ? 'error' : type === 'success' ? 'success' : '');
-        notification.classList.add('show');
-        
+    function showNotification(title, message, type = 'info') { // type: info, success, error
+        notification.innerHTML = `<strong>${title}:</strong> ${message}`;
+        notification.className = `notification ${type}`;
+        notification.style.display = 'block';
         setTimeout(() => {
-            notification.classList.remove('show');
-        }, 5000);
+            notification.style.display = 'none';
+        }, 3000);
+    }
+    
+    function startDrag(e) {
+        if (!selectedComponent || !e.target.closest('.component') || e.target.classList.contains('component-terminal')) return;
+        
+        // Asegurarse de que el componente clickeado es el seleccionado para arrastrar
+        const targetComponentElement = e.target.closest('.component');
+        if (selectedComponent.element !== targetComponentElement) {
+             // Si se hace clic en un componente diferente al seleccionado, selecciónalo primero
+            const componentData = components.find(c => c.element === targetComponentElement);
+            if (componentData) {
+                selectComponent(targetComponentElement, componentData.type, componentData.properties);
+            } else {
+                return; // No se encontró el componente, no arrastrar
+            }
+        }
+
+        isDragging = true;
+        selectedComponent.element.classList.add('dragging');
+        // Coordenadas relativas al componente, no al canvas, para evitar saltos
+        dragStartX = e.clientX - selectedComponent.element.offsetLeft;
+        dragStartY = e.clientY - selectedComponent.element.offsetTop;
+        circuitStage.style.cursor = 'grabbing';
     }
 
-    // Inicializar con el primer circuito
-    if (circuits.length > 0) {
-        loadCircuit(circuits[0].id);
+    function handleDrag(e) {
+        if (!isDragging || !selectedComponent) return;
+        e.preventDefault(); // Prevenir selección de texto u otros comportamientos por defecto
+
+        const rect = circuitCanvas.getBoundingClientRect(); // Obtener límites del canvas para calcular pos. relativa
+        
+        // Nueva posición X, Y calculada restando el offset inicial del drag y la posición del canvas
+        let newX = e.clientX - dragStartX - rect.left;
+        let newY = e.clientY - dragStartY - rect.top;
+
+        // Asegurarse de que el componente no se salga del circuitStage (o canvas)
+        // Las dimensiones del componente también deben ser consideradas para los límites derecho e inferior
+        const compWidth = selectedComponent.element.offsetWidth;
+        const compHeight = selectedComponent.element.offsetHeight;
+
+        newX = Math.max(0, Math.min(newX, circuitStage.offsetWidth - compWidth));
+        newY = Math.max(0, Math.min(newY, circuitStage.offsetHeight - compHeight));
+
+        selectedComponent.element.style.left = `${newX}px`;
+        selectedComponent.element.style.top = `${newY}px`;
+        selectedComponent.x = newX;
+        selectedComponent.y = newY;
+        updateConnectionsForComponent(selectedComponent.id);
     }
+
+    function endDrag(e) {
+        if (!isDragging || !selectedComponent) return;
+        isDragging = false;
+        selectedComponent.element.classList.remove('dragging');
+        circuitStage.style.cursor = ''; // Restaurar cursor
+        // selectedComponent = null; // No deseleccionar al terminar de arrastrar
+    }
+
+    function updateConnectionsForComponent(componentId) {
+        connections.forEach(conn => {
+            let needsUpdate = false;
+            let newX1, newY1, newX2, newY2;
+
+            const fromComp = components.find(c => c.id === conn.fromComponent);
+            const toComp = components.find(c => c.id === conn.toComponent);
+
+            if (!fromComp || !toComp) return; // Si algún componente de la conexión no existe
+
+            const fromTerminalEl = fromComp.element.querySelector(`.component-terminal[data-position="${conn.fromTerminal}"]`);
+            const toTerminalEl = toComp.element.querySelector(`.component-terminal[data-position="${conn.toTerminal}"]`);
+
+            if (!fromTerminalEl || !toTerminalEl) return;
+
+            newX1 = fromTerminalEl.offsetLeft + fromTerminalEl.offsetWidth / 2 + fromComp.element.offsetLeft;
+            newY1 = fromTerminalEl.offsetTop + fromTerminalEl.offsetHeight / 2 + fromComp.element.offsetTop;
+            newX2 = toTerminalEl.offsetLeft + toTerminalEl.offsetWidth / 2 + toComp.element.offsetLeft;
+            newY2 = toTerminalEl.offsetTop + toTerminalEl.offsetHeight / 2 + toComp.element.offsetTop;
+            
+            if (conn.fromComponent === componentId || conn.toComponent === componentId) {
+                needsUpdate = true;
+            }
+
+            if (needsUpdate) {
+                const midX = (newX1 + newX2) / 2;
+                const d = `M ${newX1} ${newY1} C ${midX} ${newY1}, ${midX} ${newY2}, ${newX2} ${newY2}`;
+                conn.element.setAttribute('d', d);
+            }
+        });
+    }
+
+    // Carga inicial
+    // Puedes llamar a updateCircuitsList aquí si quieres que se muestre la lista al cargar la página
+    updateCircuitsList(); 
+    if (circuits.length > 0 && !currentCircuit) {
+        // Opcionalmente, cargar el primer circuito de la lista por defecto
+        // loadCircuit(circuits[0].id); 
+    } else if (!currentCircuit) {
+        // Si no hay circuitos, quizá crear uno vacío por defecto
+        // createNewCircuit({ preventDefault: () => {} }); // Simula un evento
+        // circuitNameInput.value = "Circuito por Defecto";
+        // document.querySelector('#newCircuitForm button[type="submit"]').click();
+        // O simplemente dejar el canvas vacío.
+    }
+
+
 });
