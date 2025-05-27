@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wiki De Circuito</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(to bottom right, #e0f7fa, #bbdefb);
+      color: #333;
+    }
+
+    header {
+      background-color: #2196f3;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6em;
+    }
+
+    .menu-toggle {
+      font-size: 1.5em;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: white;
+    }
+
+    nav {
+      display: none;
+      flex-direction: column;
+      background-color: #64b5f6;
+    }
+
+    nav a {
+      padding: 12px 20px;
+      color: white;
+      text-decoration: none;
+      border-top: 1px solid #42a5f5;
+    }
+
+    nav a:hover {
+      background-color: #1e88e5;
+    }
+
+    section {
+      padding: 20px;
+    }
+
+    h2 {
+      color: #1976d2;
+    }
+
+    .componente {
+      background: #fff;
+      border-radius: 15px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    table th, table td {
+      padding: 8px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    table thead {
+      background-color: #1976d2;
+      color: white;
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Wiki de Circuitos</h1>
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+</header>
+
+<nav id="menu">
+  <a href="#resistencia">Resistencia</a>
+  <a href="#capacitor">Capacitor</a>
+  <a href="#inductancia">Inductancia</a>
+  <a href="#led">LED</a>
+  <a href="#switch">Interruptor</a>
+  <a href="#bateria">Batería</a>
+  <a href="#fuenteac">Fuente AC</a>
+  <a href="#tierra">Tierra</a>
+  <a href="#porqueresistencia">Uso y colores</a>
+  <a href="#orden">Orden en los circuitos</a>
+</nav>
+
+<section>
+  <div id="resistencia" class="componente">
+    <h2>🔌 Resistencia</h2>
+    <p>Limita la corriente eléctrica para proteger componentes sensibles como LEDs o microchips.</p>
+    <h4>🔍 Dato curioso:</h4>
+    <p>Antes, las resistencias eran alambres enrollados. Hoy se hacen con películas metálicas muy precisas.</p>
+  </div>
+
+  <div id="capacitor" class="componente">
+    <h2>🔋 Capacitor</h2>
+    <p>Almacena energía eléctrica por un corto tiempo y la libera cuando se necesita.</p>
+    <h4>🔍 Dato curioso:</h4>
+    <p>Los capacitores se usan para disparar el flash de una cámara o suavizar el voltaje.</p>
+  </div>
+
+  <div id="inductancia" class="componente">
+    <h2>🔄 Inductancia</h2>
+    <p>Almacena energía en un campo magnético. Se usa en filtros y transformadores.</p>
+    <h4>🔍 Dato curioso:</h4>
+    <p>Puede generar una chispa cuando se corta la corriente. ¡Se usa en timbres eléctricos!</p>
+  </div>
+
+  <div id="led" class="componente">
+    <h2>💡 LED</h2>
+    <p>Es una luz que se enciende solo si la corriente va en la dirección correcta.</p>
+    <h4>🔍 Dato curioso:</h4>
+    <p>Los LEDs consumen poca energía y pueden durar más de 10 años encendidos.</p>
+  </div>
+
+  <div id="switch" class="componente">
+    <h2>🎚 Interruptor</h2>
+    <p>Abre o cierra el paso de corriente. Es como un botón de encendido/apagado.</p>
+    <h4>🔍 Dato curioso:</h4>
+    <p>Algunos funcionan sin tocarse, usando sensores de movimiento o luz.</p>
+  </div>
+
+  <div id="bateria" class="componente">
+    <h2>🔋 Batería</h2>
+    <p>Es la fuente de energía. Tiene polos positivo y negativo.</p>
+    <h4>🔍 Dato curioso:</h4>
+    <p>Fue inventada por Alessandro Volta. El "voltio" se llama así por él.</p>
+  </div>
+
+  <div id="fuenteac" class="componente">
+    <h2>⚡ Fuente AC</h2>
+    <p>Proporciona energía alterna como la de los enchufes. Cambia de dirección 60 veces por segundo.</p>
+    <h4>🔍 Dato curioso:</h4>
+    <p>Fue promovida por Nikola Tesla y ganó la "guerra de las corrientes" contra Edison.</p>
+  </div>
+
+  <div id="tierra" class="componente">
+    <h2>🌎 Tierra</h2>
+    <p>Es un punto de seguridad para evitar descargas eléctricas. Redirige la corriente sobrante.</p>
+    <h4>🔍 Dato curioso:</h4>
+    <p>Se conecta literalmente al suelo mediante varillas metálicas.</p>
+  </div>
+
+  <div id="porqueresistencia" class="componente">
+    <h2>🎯 ¿Por qué usamos resistencias?</h2>
+    <p>Las resistencias controlan el paso de la corriente. Si un componente recibe demasiada corriente, puede dañarse. La resistencia lo protege.</p>
+    <p>Ejemplo clásico: si conectas un LED directamente a una batería, puede quemarse. Pero si pones una resistencia antes, el LED brilla con seguridad.</p>
+    <h3>🎨 Tabla de colores de resistencias</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Color</th><th>Valor</th><th>Multiplicador</th><th>Tolerancia</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Negro</td><td>0</td><td>x1</td><td>—</td></tr>
+        <tr><td>Marrón</td><td>1</td><td>x10</td><td>±1%</td></tr>
+        <tr><td>Rojo</td><td>2</td><td>x100</td><td>±2%</td></tr>
+        <tr><td>Naranja</td><td>3</td><td>x1k</td><td>—</td></tr>
+        <tr><td>Amarillo</td><td>4</td><td>x10k</td><td>—</td></tr>
+        <tr><td>Verde</td><td>5</td><td>x100k</td><td>±0.5%</td></tr>
+        <tr><td>Azul</td><td>6</td><td>x1M</td><td>±0.25%</td></tr>
+        <tr><td>Violeta</td><td>7</td><td>x10M</td><td>±0.1%</td></tr>
+        <tr><td>Gris</td><td>8</td><td>x100M</td><td>±0.05%</td></tr>
+        <tr><td>Blanco</td><td>9</td><td>x1G</td><td>—</td></tr>
+        <tr><td>Dorado</td><td>—</td><td>x0.1</td><td>±5%</td></tr>
+        <tr><td>Plateado</td><td>—</td><td>x0.01</td><td>±10%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="orden" class="componente">
+    <h2>📐 ¿Importa el orden de los componentes?</h2>
+    <p>Sí. El orden en que colocamos los componentes en un circuito afecta cómo funciona. Algunos deben ir primero por protección o funcionamiento correcto.</p>
+    <p>Por ejemplo:</p>
+    <pre><code>[ + Batería ] ──► [ Resistencia ] ──► [ LED ] ──► [ - Batería ]</code></pre>
+    <p>Colocar la resistencia antes del LED evita que le llegue demasiada corriente.</p>
+    <h4>💡 Tip:</h4>
+    <p>Las resistencias no tienen polaridad, pero es mejor colocarlas antes de componentes sensibles para protegerlos desde el inicio.</p>
+    <p>Otros componentes como LEDs, capacitores o baterías sí tienen polaridad, y si los pones al revés, ¡no funcionarán o se dañarán!</p>
+    <em>*[Imagen ilustrativa opcional aquí]*</em>
+  </div>
+</section>
+
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById("menu");
+    menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+  }
+</script>
+
+</body>
+</html>

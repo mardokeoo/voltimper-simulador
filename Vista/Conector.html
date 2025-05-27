@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circuititos Kids</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #004d99;
+      text-shadow: 2px 2px #ffffff;
+      margin-bottom: 30px;
+    }
+
+    .boton {
+      background-color: #ffcc00;
+      border: none;
+      color: #333;
+      padding: 20px 40px;
+      margin: 15px;
+      border-radius: 40px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease, background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .boton:hover {
+      background-color: #ffdb4d;
+      transform: scale(1.05);
+    }
+
+    .icono {
+      width: 32px;
+      height: 32px;
+    }
+
+    .contenedor {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>⚡ voltimper ⚡</h1>
+  <div class="contenedor">
+    <button class="boton" onclick="window.location.href='SimuladorDeCircuitos.html'">
+      <img src="https://img.icons8.com/color/48/000000/electrical--v1.png" class="icono" alt="Simular">
+      Simular circuito   Solo Funciona En Pc 
+    </button>
+
+    <button class="boton" onclick="window.location.href='Graficas.html'">
+      <img src="https://img.icons8.com/color/48/000000/light-on--v1.png" class="icono" alt="Aprender">
+      gráficas de componentes
+    </button>
+
+    <button class="boton" onclick="window.location.href='Wiki.html'">
+      <img class="icono" src="Wiki.html" alt="Wiki">
+      wiki de circuitos
+    </button>
+
+    <button class="boton" onclick="window.location.href='https://www.youtube.com/playlist?list=PL_HTlcxWs31IkwvZbOcCvEkLvwzN_-7jL&jct=lTQX7-U8_UHqdWy57YWRnw'">
+      <img class="icono" src="https://img.icons8.com/fluency/48/000000/youtube-play.png" alt="Videos">
+      Videos Mi Primer Circuito
+    </button>
+  </div>
+</body>
+</html>

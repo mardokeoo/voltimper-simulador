@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de Componentes Eléctricos y Matemáticas Especiales</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .menu-btn {
+            border: none;
+            background: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #34495e;
+            color: white;
+            z-index: 100;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding-top: 60px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+        }
+        .sidebar.open {
+            left: 0;
+        }
+        .sidebar-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: none;
+            background: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .sidebar-section {
+            padding: 15px;
+            border-bottom: 1px solid #4a6278;
+        }
+        .sidebar-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .sidebar-menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+        .sidebar-menu button {
+            background: none;
+            border: none;
+            color: #ecf0f1;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .sidebar-menu button:hover {
+            background-color: #4a6278;
+        }
+        .sidebar-menu button.active {
+            background-color: #2980b9;
+        }
+        .chart-container {
+            flex: 1;
+            min-width: 500px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+        .math-container {
+            flex: 1;
+            min-width: 500px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+        .controls {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .component-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .component-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .component-btn.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .math-tab {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .math-content {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .formula-display {
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .concept-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .concept-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .concept-btn.active {
+            background-color: #2196F3;
+            color: white;
+        }
+        .visual-container {
+            width: 100%;
+            height: 200px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .component-visual {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+        .geogebra-export {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+        }
+        .geogebra-code {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+        .math-explanation {
+            margin-top: 20px;
+        }
+        .math-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .explanation-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .formula-section {
+            flex: 1;
+            min-width: 200px;
+        }
+        .explanation-section {
+            flex: 2;
+            min-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <h2>Control de Visualización de Componentes Eléctricos</h2>
+        <div class="component-selector">
+            <button class="component-btn active" data-component="resistor">Resistor</button>
+            <button class="component-btn" data-component="capacitor">Capacitor</button>
+            <button class="component-btn" data-component="inductor">Inductor</button>
+            <button class="component-btn" data-component="diode">Diodo</button>
+            <button class="component-btn" data-component="transistor">Transistor</button>
+        </div>
+        <div class="concept-selector">
+            <button class="concept-btn active" data-concept="derivative">Derivada Imaginaria</button>
+            <button class="concept-btn" data-concept="integral">Integral Imaginaria</button>
+            <button class="concept-btn" data-concept="euler">Euler Imaginario</button>
+            <button class="concept-btn" data-concept="laplace">Transformada de Laplace</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="chart-container">
+            <h3 id="chart-title">Comportamiento Eléctrico del Resistor</h3>
+            <canvas id="electricityChart"></canvas>
+            <div class="visual-container">
+                <div class="component-visual" id="component-animation">⚡</div>
+            </div>
+        </div>
+        
+        <div class="math-container">
+            <h3>Matemáticas Especiales</h3>
+            <div id="math-explanation" class="math-explanation">
+                <div class="math-title">Derivada Imaginaria aplicada al Resistor</div>
+                <div class="explanation-content">
+                    <div class="formula-section">
+                        <div class="formula-display">
+                            $$\frac{d}{dt}[f(t)] = \lim_{h \to 0}\frac{f(t+h)-f(t)}{h}$$
+                            $$\frac{d}{dt}[e^{i\omega t}] = i\omega e^{i\omega t}$$
+                        </div>
+                    </div>
+                    <div class="explanation-section">
+                        <p>La derivada imaginaria extiende el concepto de derivada al plano complejo. Para un resistor, esto nos permite analizar cómo cambia la corriente instantáneamente cuando aplicamos un voltaje sinusoidal.</p>
+                        <p>En el caso del resistor ideal, la relación derivativa muestra que el cambio instantáneo de corriente es proporcional al cambio de voltaje, según la ley de Ohm.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="geogebra-export">
+                <h4>Exportar a GeoGebra</h4>
+                <p>Para visualizar esta gráfica en GeoGebra, copia el siguiente código:</p>
+                <div class="geogebra-code" id="geogebra-code">
+f(x) = sin(x)
+g(x) = cos(x)
+Curva[f(t), g(t), t, 0, 2π]
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración global y variables
+        const components = {
+            resistor: {
+                name: "Resistor",
+                formula: "V = I * R",
+                description: "Un resistor obedece la ley de Ohm, donde el voltaje es proporcional a la corriente.",
+                color: "rgb(255, 99, 132)",
+                generateData: (t) => Math.sin(t * 0.1) * 5,
+                animation: (t) => Math.sin(t * 0.1) > 0 ? "→" : "←",
+                geogebra: "f(x) = sin(x)\ng(x) = x/5\nCurva[f(t), g(t), t, 0, 10π]"
+            },
+            capacitor: {
+                name: "Capacitor",
+                formula: "I = C * dV/dt",
+                description: "Un capacitor almacena carga, donde la corriente depende de la tasa de cambio del voltaje.",
+                color: "rgb(54, 162, 235)",
+                generateData: (t) => Math.sin(t * 0.05) * 4 + Math.cos(t * 0.1) * 2,
+                animation: (t) => {
+                    const val = Math.sin(t * 0.05);
+                    if (val > 0.7) return "++++";
+                    else if (val > 0.3) return "+++";
+                    else if (val > 0) return "++";
+                    else if (val > -0.3) return "--";
+                    else if (val > -0.7) return "---";
+                    else return "----";
+                },
+                geogebra: "f(x) = sin(x/2) * 4 + cos(x) * 2\ng(x) = cos(x/2) * 2\nCurva[f(t), g(t), t, 0, 20π]"
+            },
+            inductor: {
+                name: "Inductor",
+                formula: "V = L * dI/dt",
+                description: "Un inductor se opone a cambios en la corriente, generando un voltaje proporcional a la tasa de cambio.",
+                color: "rgb(255, 206, 86)",
+                generateData: (t) => Math.sin(t * 0.1) * 3 + Math.sin(t * 0.2) * 2,
+                animation: (t) => {
+                    return "∿" + "∿".repeat(Math.floor(Math.abs(Math.sin(t * 0.1) * 2) + 1));
+                },
+                geogebra: "f(x) = sin(x/10) * 3 + sin(x/5) * 2\ng(x) = cos(x/10) * 2\nCurva[f(t), g(t), t, 0, 20π]"
+            },
+            diode: {
+                name: "Diodo",
+                formula: "I = Is * (e^(V/Vt) - 1)",
+                description: "Un diodo permite el flujo de corriente en una dirección, con una relación exponencial entre corriente y voltaje.",
+                color: "rgb(75, 192, 192)",
+                generateData: (t) => {
+                    const v = Math.sin(t * 0.1);
+                    return v > 0 ? Math.exp(v) - 1 : 0.01 * v;
+                },
+                animation: (t) => {
+                    const v = Math.sin(t * 0.1);
+                    return v > 0 ? "→→" : "·";
+                },
+                geogebra: "f(x) = sin(x/10)\ng(x) = If[f(x) > 0, exp(f(x)) - 1, 0.01 * f(x)]\nCurva[f(t), g(t), t, 0, 20π]"
+            },
+            transistor: {
+                name: "Transistor",
+                formula: "Ic = β * Ib",
+                description: "Un transistor amplifica la corriente, con la corriente del colector proporcional a la corriente de la base.",
+                color: "rgb(153, 102, 255)",
+                generateData: (t) => {
+                    const base = Math.sin(t * 0.05) * 0.5;
+                    return base > 0 ? base * 10 : base * 0.1;
+                },
+                animation: (t) => {
+                    const val = Math.sin(t * 0.05);
+                    if (val > 0) return "⇉".repeat(Math.floor(val * 5) + 1);
+                    else return "·";
+                },
+                geogebra: "f(x) = sin(x/20) * 0.5\ng(x) = If[f(x) > 0, f(x) * 10, f(x) * 0.1]\nCurva[f(t), g(t), t, 0, 40π]"
+            }
+        };
+
+        const mathConcepts = {
+            derivative: {
+                title: "Derivada Imaginaria",
+                formulas: {
+                    resistor: "$$\\frac{d}{dt}[I(t)] = \\frac{1}{R}\\frac{dV(t)}{dt}$$$$\\frac{d}{dt}[e^{i\\omega t}] = i\\omega e^{i\\omega t}$$",
+                    capacitor: "$$I(t) = C\\frac{dV(t)}{dt}$$$$\\frac{d}{dt}[V_0 \\sin(\\omega t)] = V_0 \\omega \\cos(\\omega t)$$",
+                    inductor: "$$V(t) = L\\frac{dI(t)}{dt}$$$$\\frac{d}{dt}[I_0 e^{i\\omega t}] = i\\omega I_0 e^{i\\omega t}$$",
+                    diode: "$$\\frac{d}{dt}[I_s(e^{\\frac{V(t)}{V_T}}-1)] = \\frac{I_s}{V_T}e^{\\frac{V(t)}{V_T}}\\frac{dV(t)}{dt}$$",
+                    transistor: "$$\\frac{d}{dt}[I_c(t)] = \\beta \\frac{d}{dt}[I_b(t)]$$"
+                },
+                explanations: {
+                    resistor: "Para un resistor, la derivada imaginaría nos muestra cómo cambia la corriente instantáneamente cuando varía el voltaje. Esto es fundamental en circuitos AC donde las señales son de la forma \\(e^{i\\omega t}\\).",
+                    capacitor: "La corriente en un capacitor es proporcional a la derivada del voltaje. Con funciones sinusoidales complejas, esto produce un desfase de 90° entre voltaje y corriente.",
+                    inductor: "El inductor relaciona el voltaje con la derivada de la corriente. En el dominio complejo, esto produce un adelanto de fase de 90° del voltaje respecto a la corriente.",
+                    diode: "La derivada de la ecuación del diodo muestra la sensibilidad del cambio de corriente respecto a cambios de voltaje, mostrando su comportamiento no lineal.",
+                    transistor: "La derivada de la corriente del colector respecto al tiempo es proporcional a la derivada de la corriente de base, manteniendo el factor de amplificación."
+                }
+            },
+            integral: {
+                title: "Integral Imaginaria",
+                formulas: {
+                    resistor: "$$\\int I(t)dt = \\frac{1}{R}\\int V(t)dt$$$$\\int e^{i\\omega t}dt = \\frac{1}{i\\omega}e^{i\\omega t} + C$$",
+                    capacitor: "$$V(t) = \\frac{1}{C}\\int I(t)dt$$$$\\int I_0\\cos(\\omega t)dt = \\frac{I_0}{\\omega}\\sin(\\omega t) + C$$",
+                    inductor: "$$I(t) = \\frac{1}{L}\\int V(t)dt$$$$\\int V_0e^{i\\omega t}dt = \\frac{V_0}{i\\omega}e^{i\\omega t} + C$$",
+                    diode: "$$\\int I(t)dt = \\int I_s(e^{\\frac{V(t)}{V_T}}-1)dt$$",
+                    transistor: "$$\\int I_c(t)dt = \\beta \\int I_b(t)dt$$"
+                },
+                explanations: {
+                    resistor: "La integral de la corriente a través de un resistor está relacionada con la carga total que ha fluido. En el dominio complejo, esto relaciona potencia y energía.",
+                    capacitor: "La integral de la corriente dividida por la capacitancia nos da el voltaje en el capacitor. Esto representa la acumulación de carga en función del tiempo.",
+                    inductor: "La integral del voltaje dividida por la inductancia da la corriente. En señales complejas, esto se relaciona con el flujo magnético acumulado.",
+                    diode: "La integral de la corriente del diodo es compleja debido a su comportamiento no lineal y representa la carga total que ha fluido a través del dispositivo.",
+                    transistor: "La integral de la corriente del colector es proporcional a la integral de la corriente de base, manteniendo la relación de amplificación en términos de carga total."
+                }
+            },
+            euler: {
+                title: "Euler Imaginario",
+                formulas: {
+                    resistor: "$$V(t) = V_0e^{i\\omega t} = V_0(\\cos(\\omega t) + i\\sin(\\omega t))$$$$I(t) = \\frac{V_0}{R}e^{i\\omega t}$$",
+                    capacitor: "$$I(t) = C\\frac{d}{dt}[V_0e^{i\\omega t}] = i\\omega CV_0e^{i\\omega t}$$$$Z_C = \\frac{1}{i\\omega C}$$",
+                    inductor: "$$V(t) = L\\frac{d}{dt}[I_0e^{i\\omega t}] = i\\omega LI_0e^{i\\omega t}$$$$Z_L = i\\omega L$$",
+                    diode: "$$I(t) = I_s(e^{\\frac{V_0e^{i\\omega t}}{V_T}}-1)$$",
+                    transistor: "$$I_c(t) = \\beta I_b(t) = \\beta I_{b0}e^{i\\omega t}$$"
+                },
+                explanations: {
+                    resistor: "La identidad de Euler (\\(e^{i\\theta} = \\cos\\theta + i\\sin\\theta\\)) permite expresar señales sinusoidales en forma compacta. Para un resistor, voltaje y corriente permanecen en fase.",
+                    capacitor: "Usando la identidad de Euler vemos que la corriente en un capacitor se adelanta 90° al voltaje, lo que se muestra matemáticamente por el factor \\(i\\) que representa un giro de 90° en el plano complejo.",
+                    inductor: "Con la notación de Euler, el voltaje en un inductor se adelanta 90° a la corriente, representado por el factor \\(i\\) en la ecuación.",
+                    diode: "El comportamiento no lineal del diodo complica el análisis con la identidad de Euler, pero permite describir su respuesta a señales sinusoidales complejas.",
+                    transistor: "La identidad de Euler nos permite relacionar las corrientes de base y colector en el dominio complejo, manteniendo su relación de fase."
+                }
+            },
+            laplace: {
+                title: "Transformada de Laplace",
+                formulas: {
+                    resistor: "$$V(s) = I(s) \\cdot R$$$$\\mathcal{L}\\{e^{i\\omega t}\\} = \\frac{1}{s-i\\omega}$$",
+                    capacitor: "$$V(s) = I(s) \\cdot \\frac{1}{sC}$$$$Z_C(s) = \\frac{1}{sC}$$",
+                    inductor: "$$V(s) = I(s) \\cdot sL$$$$Z_L(s) = sL$$",
+                    diode: "$$\\mathcal{L}\\{I_s(e^{\\frac{V(t)}{V_T}}-1)\\} = \\text{compleja}$$",
+                    transistor: "$$I_c(s) = \\beta I_b(s)$$"
+                },
+                explanations: {
+                    resistor: "La transformada de Laplace convierte ecuaciones diferenciales en algebraicas. Para un resistor, la relación V=IR se mantiene en el dominio s, simplificando análisis de circuitos.",
+                    capacitor: "En el dominio de Laplace, el capacitor se representa como una impedancia \\(\\frac{1}{sC}\\), facilitando el análisis de circuitos complejos sin ecuaciones diferenciales.",
+                    inductor: "La transformada convierte el inductor en una impedancia \\(sL\\), permitiendo resolver circuitos RLC mediante álgebra en lugar de ecuaciones diferenciales.",
+                    diode: "La transformada de Laplace del comportamiento no lineal del diodo es compleja, pero permite análisis de pequeña señal mediante linealización.",
+                    transistor: "La relación entre corrientes de colector y base se mantiene en el dominio s, permitiendo análisis de amplificadores en frecuencia."
+                }
+            }
+        };
+
+        // Inicializar el gráfico
+        const ctx = document.getElementById('electricityChart').getContext('2d');
+        const chartData = {
+            labels: Array.from({length: 60}, (_, i) => i),
+            datasets: [{
+                label: 'Electricidad',
+                data: Array.from({length: 60}, (_, i) => components.resistor.generateData(i)),
+                borderColor: components.resistor.color,
+                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        };
+        
+        const chartConfig = {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 0
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        suggestedMin: -10,
+                        suggestedMax: 10
+                    }
+                }
+            }
+        };
+        
+        const electricityChart = new Chart(ctx, chartConfig);
+
+        // Variables de estado
+        let currentComponent = 'resistor';
+        let currentConcept = 'derivative';
+        let animationFrame;
+        let timeCounter = 0;
+
+        // Funciones de actualización
+        function updateChart() {
+            const component = components[currentComponent];
+            
+            // Actualizar datos
+            electricityChart.data.datasets[0].data.shift();
+            electricityChart.data.datasets[0].data.push(component.generateData(timeCounter));
+            electricityChart.data.datasets[0].borderColor = component.color;
+            electricityChart.data.datasets[0].backgroundColor = component.color.replace('rgb', 'rgba').replace(')', ', 0.1)');
+            
+            // Actualizar título
+            document.getElementById('chart-title').textContent = `Comportamiento Eléctrico del ${component.name}`;
+            
+            // Actualizar animación
+            document.getElementById('component-animation').textContent = component.animation(timeCounter);
+            
+            // Actualizar el gráfico
+            electricityChart.update();
+            
+            // Incrementar contador de tiempo
+            timeCounter++;
+            
+            // Continuar la animación
+            animationFrame = requestAnimationFrame(updateChart);
+        }
+
+        function updateMathExplanation() {
+            const component = components[currentComponent];
+            const concept = mathConcepts[currentConcept];
+            
+            const mathExplanationHTML = `
+                <div class="math-title">${concept.title} aplicada al ${component.name}</div>
+                <div class="explanation-content">
+                    <div class="formula-section">
+                        <div class="formula-display">
+                            ${concept.formulas[currentComponent]}
+                        </div>
+                    </div>
+                    <div class="explanation-section">
+                        <p>${concept.explanations[currentComponent]}</p>
+                        <p>Aplicando esta matemática al ${component.name} con la fórmula básica ${component.formula}, podemos analizar su comportamiento eléctrico en términos complejos.</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('math-explanation').innerHTML = mathExplanationHTML;
+            
+            // Actualizar código GeoGebra
+            document.getElementById('geogebra-code').textContent = component.geogebra;
+            
+            // Renderizar fórmulas matemáticas
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        // Event listeners
+        document.querySelectorAll('.component-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Actualizar estado activo
+                document.querySelectorAll('.component-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Actualizar componente actual
+                currentComponent = this.dataset.component;
+                
+                // Actualizar visualización
+                updateMathExplanation();
+            });
+        });
+
+        document.querySelectorAll('.concept-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Actualizar estado activo
+                document.querySelectorAll('.concept-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Actualizar concepto actual
+                currentConcept = this.dataset.concept;
+                
+                // Actualizar visualización
+                updateMathExplanation();
+            });
+        });
+
+        // Iniciar animación
+        updateChart();
+        updateMathExplanation();
+    </script>
+</body>
+</html>

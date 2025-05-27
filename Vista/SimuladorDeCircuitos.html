@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador voltimper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <h1>Simulador Voltimper</h1>
+        <div class="navbar-buttons">
+            <button id="newCircuitBtn" class="btn btn-primary">Nuevo Circuito</button>
+            <button id="simulateBtn" class="btn btn-success">Iniciar Simulación</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-title">Mis Circuitos</div>
+            <div id="circuitsList" class="circuits-list"></div>
+        </div>
+
+        <div class="workspace">
+            <div class="components-toolbar" id="componentsToolbar">
+                <button class="component-btn" data-component="resistor" title="Resistencia">
+                    <img src="../images/Resistor.png" alt="Resistor Icono" class="component-icon">
+                    <span class="component-label">Resistor</span>
+                </button>
+                <button class="component-btn" data-component="capacitor" title="Capacitor">
+                    <img src="../images/Capacitor.png" alt="Capacitor Icono" class="component-icon">
+                    <span class="component-label">Capacitor</span>
+                </button>
+                <button class="component-btn" data-component="inductor" title="Inductor">
+                    <img src="../images/Inductor.png" alt="Inductor Icono" class="component-icon">
+                    <span class="component-label">Inductor</span>
+                </button>
+                <button class="component-btn" data-component="led" title="LED">
+                    <img src="../images/Led.png" alt="Led Icono" class="component-icon">
+                    <span class="component-label">LED</span>
+                </button>
+                <button class="component-btn" data-component="switch" title="Interruptor">
+                    <img src="../images/Switch.png" alt="Switch Icono" class="component-icon">
+                    <span class="component-label">Switch</span>
+                </button>
+                <button class="component-btn" data-component="battery" title="Fuente de Voltaje DC">
+                    <svg class="component-icon" viewBox="0 0 24 24">
+                        <path d="M4 12 H 8 M 16 12 H 20 M 8 8 V 16 M 12 10 V 14 M 16 8 V 16"/>
+                        <text x="17" y="9" font-size="5" fill="currentColor">+</text>
+                        <text x="17" y="17" font-size="5" fill="currentColor">-</text>
+                    </svg>
+                    <span class="component-label">Batería</span>
+                </button>
+                <button class="component-btn" data-component="ac_source" title="Fuente de Voltaje AC">
+                    <svg class="component-icon" viewBox="0 0 24 24">
+                        <path d="M4 12 H 8 M 16 12 H 20 M 8 8 V 16 M 12 6 V 18 M 16 8 V 16"/>
+                        <path d="M 8 12 C 10 8 14 16 16 12" stroke-width="1.5" fill="none"/>
+                        <text x="17" y="9" font-size="5" fill="currentColor">~</text>
+                        <text x="17" y="17" font-size="5" fill="currentColor">~</text>
+                    </svg>
+                    <span class="component-label">Fuente AC</span>
+                </button>
+                <button class="component-btn" data-component="ground" title="Tierra">
+                    <img src="../images/Tierra.png" alt="Tierra Icono" class="component-icon">
+                    <span class="component-label">Tierra</span>
+                </button>
+            </div>
+            <div class="circuit-canvas" id="circuitCanvas">
+                <svg id="connections-svg"></svg>
+                <div id="circuitStage" class="circuit-stage"></div>
+                <div id="tooltip" class="tooltip"></div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <div class="panel-section">
+                <div class="panel-title">Control de Simulación</div>
+                <div class="simulation-controls">
+                    <button id="resetSimulationBtn" class="btn btn-danger">Detener Simulación</button>
+                    <div class="control-group">
+                        <div class="control-label">Tiempo de simulación: <span id="simulationTime">0.00s</span></div>
+                    </div>
+                    <div id="simulationStatus" style="font-size: 0.9rem; margin-top: 5px;">Estado: Detenido</div>
+                </div>
+            </div>
+            <div class="panel-section component-properties" id="componentPropertiesSection">
+                <div class="panel-title" id="componentPropertiesTitle">
+                    <span>Propiedades</span>
+                    <button id="deleteComponentBtn" class="btn btn-danger" style="display: none;">Eliminar</button>
+                </div>
+                <div id="componentPropertiesContent">
+                    <div class="no-component-selected">Selecciona un componente para ver/editar sus propiedades</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="newCircuitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Nuevo Circuito</div>
+                <button class="modal-close" data-close-modal="newCircuitModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="newCircuitForm" class="new-circuit-form">
+                    <div class="form-group">
+                        <label class="form-label" for="circuitNameInput">Nombre del Circuito</label>
+                        <input type="text" id="circuitNameInput" class="form-input" placeholder="Ej: Circuito RC Básico" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="circuitDescriptionInput">Descripción (opcional)</label>
+                        <textarea id="circuitDescriptionInput" class="form-input" rows="3" placeholder="Breve descripción del propósito del circuito..."></textarea>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-danger" data-close-modal="newCircuitModal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Crear Circuito</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="graphModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Análisis del Circuito (Placeholder)</div>
+                <button class="modal-close" data-close-modal="graphModal">&times;</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <div class="notification-title" id="notificationTitle">Título</div>
+        <div class="notification-message" id="notificationMessage">Mensaje</div>
+    </div>
+
+    <script src="../script.js">
+
+    </script>
+</body>
+</html>
